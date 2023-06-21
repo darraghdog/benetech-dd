@@ -5,9 +5,70 @@ import torch
 from torch.nn import functional as F
 from tqdm import tqdm
 from transformers import Pix2StructProcessor
-from utils import custom_round, convert_to_number
+# from utils import custom_round, convert_to_number
 import importlib
 import collections
+
+def custom_round(num):
+    neg = False 
+    if num < 0:
+        neg, num = True, -num
+    base_val = int(np.floor(np.log10(num)))
+    num1 = num / (10 ** (base_val - 2))
+    num1 = int(np.round(num1))
+    num1 *= (10 ** (base_val - 2))
+    #print(num1, base_val)
+    if (num1 <10) and (num1>1):
+        if num1%1==0:
+            num1 = int(num1)
+        else:
+            num1 = np.round(num1, (-base_val+3))
+    elif (num1<1):
+        num1 = np.round(num1, (-base_val+3))
+    else:
+        num1 = int(num1)
+    if neg: num1 = -num1
+    return num1
+
+
+def convert_and_fill_mean(l, type_ = int):
+    l = [np.nan if str(i).strip() in ['nan', ''] else i for i in l]
+    idx_nan = [t for t,i in enumerate(l) if i!=i]
+    l = [i for i in l if i==i]
+    mout = np.array(l).astype(type_)
+    if (len(idx_nan)>0):
+        try:
+            fill_na = custom_round(mout.mean())
+        except:
+            fill_na = 0.
+        if type_==int: 
+            fill_na = int(round(fill_na))
+        mout = mout.tolist()
+        for pos in idx_nan:
+            mout.insert(pos, fill_na)
+        return mout
+
+    else:
+        mout = mout.tolist()
+        return mout
+
+
+def convert_to_number(l):
+    if all([i!=i for i in l]):
+        return [0]* len(l)
+    try:
+        return convert_and_fill_mean(l, type_ = int)
+    except ValueError:
+        try:
+            return convert_and_fill_mean(l, type_ = float)
+        except ValueError:
+            idx_nan = [t for t,i in enumerate(l) if i!=i]
+            l = [i for i in l if i==i][:]
+            if len(idx_nan)>0:
+                fill_na = l[0]
+                for pos in idx_nan:
+                    l.insert(pos, fill_na)
+            return l
 
 '''
 import importlib
