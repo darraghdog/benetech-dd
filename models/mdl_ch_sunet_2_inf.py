@@ -116,13 +116,13 @@ class Net(nn.Module):
         output['loss'] = loss
         if not self.training:
             #nms
-            x_pred = x_seg.sigmoid()
-            x_pooled = F.max_pool2d(x_pred, kernel_size=self.nms_kernel_size, stride=1, padding=self.nms_padding)
-            x_pred[x_pred != x_pooled] = 0
-            n_pred = (x_pred[:,0] > self.n_threshold).sum((1,2))
-            loss_acc = (n_pred == batch['n']).float().mean()
-            output['loss_acc'] = loss_acc
-            output['n_pred'] = n_pred
+#             x_pred = x_seg.sigmoid()
+#             x_pooled = F.max_pool2d(x_pred, kernel_size=self.nms_kernel_size, stride=1, padding=self.nms_padding)
+#             x_pred[x_pred != x_pooled] = 0
+#             n_pred = (x_pred[:,0] > self.n_threshold).sum((1,2))
+#             loss_acc = (n_pred == batch['n']).float().mean()
+#             output['loss_acc'] = loss_acc
+#             output['n_pred'] = n_pred
             if self.return_logits:
                 output['pred_mask'] = x_seg.sigmoid()
         
