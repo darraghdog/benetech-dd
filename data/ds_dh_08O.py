@@ -19,7 +19,7 @@ from transformers import Pix2StructProcessor
 from torch.nn.utils.rnn import pad_sequence
 from typing import List, Dict, Any
 import decimal
-from utils import benetech_score
+#from utils import benetech_score
 #from utils import set_pandas_display
 from operator import itemgetter
 
