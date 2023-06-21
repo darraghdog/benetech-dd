@@ -40,4 +40,4 @@ jobs:
                   requirements.txt
                   requirements_sub.txt
                   
-          is_public: false
+          is_public: true
