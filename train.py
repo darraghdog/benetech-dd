@@ -18,24 +18,31 @@ import neptune
 from neptune.utils import stringify_unsupported
 from utils import calc_grad_norm
 
+
+
 def get_optimizer(model, cfg):
 
     params = model.parameters()
-    params = [
-        {
-            "params": [
-                param for name, param in model.named_parameters() if "backbone" in name
-            ],
-            "lr": cfg.lr[0],
-        },
-        {
-            "params": [
-                param for name, param in model.named_parameters() if not "backbone" in name
-            ],
-            "lr": cfg.lr[1],
-        },
-    ]
-    optimizer = Adafactor(params, lr=cfg.lr[1], weight_decay=cfg.weight_decay, scale_parameter=False, relative_step=False)
+
+    if cfg.optimizer == "Adam":
+        optimizer = optim.Adam(params, lr=cfg.lr, weight_decay=cfg.weight_decay)
+
+    elif cfg.optimizer == "Adafactor_mixed":
+        params = [
+            {
+                "params": [
+                    param for name, param in model.named_parameters() if "backbone" in name
+                ],
+                "lr": cfg.lr[0],
+            },
+            {
+                "params": [
+                    param for name, param in model.named_parameters() if not "backbone" in name
+                ],
+                "lr": cfg.lr[1],
+            },
+        ]
+        optimizer = Adafactor(params, lr=cfg.lr[1], weight_decay=cfg.weight_decay, scale_parameter=False, relative_step=False)
 
     return optimizer
 
